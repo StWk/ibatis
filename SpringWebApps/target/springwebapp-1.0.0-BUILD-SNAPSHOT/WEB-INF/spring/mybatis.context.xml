@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+<!-- Root Context: defines shared resources visible to all other web components -->
+<context:component-scan base-package="com.hongjun.springwebapp" />
+
+<!-- MyBatis -->
+<bean id="dataSourceSpied"
+class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+<property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+<property name="url" value="jdbc:mysql://localhost/test?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC&amp;autoReconnect=true&amp;autoReconnectForPools=true" />
+<property name="username" value="root" />
+<property name="password" value="7754" />
+<property name="initialSize" value="5"/>
+<property name="maxActive" value="20"/>
+<property name="maxIdle" value="20"/>
+<property name="minIdle" value="5"/>
+<property name="maxWait" value="3000"/>
+<property name="poolPreparedStatements" value="true"></property>
+<property name="maxOpenPreparedStatements" value="50"></property>
+<property name="testWhileIdle" value="true"/>
+<property name="validationQuery" value="select 1"/>
+<property name="minEvictableIdleTimeMillis" value="60000"/>
+<property name="numTestsPerEvictionRun" value="5"/>
+<property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+</bean>
+<bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+<constructor-arg ref="dataSourceSpied" />
+<property name="logFormatter">
+<bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+<property name="loggingType" value="MULTI_LINE" />
+<property name="sqlPrefix" value="SQL:::" />
+</bean>
+</property>
+</bean>
+
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+<property name="dataSource" ref="dataSource" />
+<property name="configLocation" value="classpath:mybatis/mybatis-config.xml" />
+<property name="typeAliasesPackage" value="mybatis.mapper" />
+<property name="mapperLocations" value="classpath:mybatis/mapper/*.xml" />
+</bean>
+
+<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+</bean>
+	
+<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+<property name="basePackage" value="mybatis.mapper"></property>
+</bean>
+
+<!-- Transaction -->
+<bean id="transactionManager" 	class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+<property name="dataSource" ref="dataSource" />
+</bean>
+	
+</beans>
