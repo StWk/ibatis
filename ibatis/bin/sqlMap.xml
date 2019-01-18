@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap    
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"   
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="worker"> 
+
+	<typeAlias alias="WORKER" type="ibatis2.WorkerTEO" />
+
+	<resultMap id="workerResultMap" class="WORKER">
+		<result property="id" column="ID" />
+  		<result property="name" column="NAME" />
+	</resultMap>
+	
+	<select id="getWorkerById" parameterClass="java.lang.Integer" resultMap="workerResultMap">
+		  SELECT * FROM WORKER WHERE ID = #value#
+	</select>
+	
+	<select id="getMaxId" resultClass="java.lang.Integer">
+		  SELECT MAX(ID) FROM WORKER
+	</select>
+	
+	<insert id="addWorker" parameterClass="WORKER">
+		INSERT INTO WORKER (ID,NAME)
+		 VALUES(#id#,#name#);
+	</insert>
+	
+	<delete id="deleteWorkerById" parameterClass="java.lang.Integer">
+		  DELETE FROM WORKER WHERE ID = #value#
+	</delete>
+	
+</sqlMap>
